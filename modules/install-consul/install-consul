@@ -113,15 +113,15 @@ function install_binaries {
   local -r version="$1"
   local -r path="$2"
   local -r username="$3"
+  local -r download_url="$4"
 
-  local -r url="https://releases.hashicorp.com/consul/${version}/consul_${version}_linux_amd64.zip"
-  local -r download_path="/tmp/consul_${version}_linux_amd64.zip"
+  local -r download_path="/tmp/consul.zip"
   local -r bin_dir="$path/bin"
   local -r consul_dest_path="$bin_dir/consul"
   local -r run_consul_dest_path="$bin_dir/run-consul"
 
   log_info "Downloading Consul $version from $url to $download_path"
-  curl -o "$download_path" "$url"
+  curl -o "$download_path" "$download_url"
   unzip -d /tmp "$download_path"
 
   log_info "Moving Consul binary to $consul_dest_path"
@@ -164,6 +164,10 @@ function install {
         user="$2"
         shift
         ;;
+      --download_url)
+        download_url"$2"
+        shift
+        ;;
       --help)
         print_usage
         exit
@@ -181,13 +185,14 @@ function install {
   assert_not_empty "--version" "$version"
   assert_not_empty "--path" "$path"
   assert_not_empty "--user" "$user"
+  assert_not_empty "--download_url" "$download_url"
 
   log_info "Starting Consul install"
 
   install_dependencies
   create_consul_user "$user"
   create_consul_install_paths "$path" "$user"
-  install_binaries "$version" "$path" "$user"
+  install_binaries "$version" "$path" "$user" "download_url"
 
   log_info "Consul install complete!"
 }
