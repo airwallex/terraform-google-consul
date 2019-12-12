@@ -15,6 +15,7 @@ source "/opt/gruntwork/bash-commons/assert.sh"
 source "/opt/gruntwork/bash-commons/log.sh"
 
 readonly DEFAULT_INSTALL_PATH="/opt/consul"
+readonly DEFAULT_CONSUL_VERSION="1.6.2"
 readonly DEFAULT_CONSUL_USER="consul"
 readonly SYSTEM_BIN_DIR="/usr/local/bin"
 
@@ -144,7 +145,7 @@ function install_binaries {
 }
 
 function install {
-  local version=""
+  local version="$DEFAULT_CONSUL_VERSION"
   local path="$DEFAULT_INSTALL_PATH"
   local user="$DEFAULT_CONSUL_USER"
 
@@ -165,7 +166,7 @@ function install {
         shift
         ;;
       --download_url)
-        download_url"$2"
+        download_url="$2"
         shift
         ;;
       --help)
