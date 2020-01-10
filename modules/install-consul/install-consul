@@ -15,6 +15,7 @@ source "/opt/gruntwork/bash-commons/assert.sh"
 source "/opt/gruntwork/bash-commons/log.sh"
 
 readonly DEFAULT_INSTALL_PATH="/opt/consul"
+readonly DEFAULT_CONSUL_VERSION="1.6.2"
 readonly DEFAULT_CONSUL_USER="consul"
 readonly SYSTEM_BIN_DIR="/usr/local/bin"
 
@@ -37,6 +38,7 @@ function print_usage {
   echo
   echo -e "  --path\t\tThe path where Consul should be installed. Optional. Default: $DEFAULT_INSTALL_PATH."
   echo -e "  --user\t\tThe user who will own the Consul install directories. Optional. Default: $DEFAULT_CONSUL_USER."
+  echo -e "  --download-url\t\t the url to download consul."
   echo
   echo "Example:"
   echo
@@ -113,15 +115,15 @@ function install_binaries {
   local -r version="$1"
   local -r path="$2"
   local -r username="$3"
+  local -r download_url="$4"
 
-  local -r url="https://releases.hashicorp.com/consul/${version}/consul_${version}_linux_amd64.zip"
-  local -r download_path="/tmp/consul_${version}_linux_amd64.zip"
+  local -r download_path="/tmp/consul.zip"
   local -r bin_dir="$path/bin"
   local -r consul_dest_path="$bin_dir/consul"
   local -r run_consul_dest_path="$bin_dir/run-consul"
 
   log_info "Downloading Consul $version from $url to $download_path"
-  curl -o "$download_path" "$url"
+  curl -o "$download_path" "$download_url"
   unzip -d /tmp "$download_path"
 
   log_info "Moving Consul binary to $consul_dest_path"
@@ -144,7 +146,7 @@ function install_binaries {
 }
 
 function install {
-  local version=""
+  local version="$DEFAULT_CONSUL_VERSION"
   local path="$DEFAULT_INSTALL_PATH"
   local user="$DEFAULT_CONSUL_USER"
 
@@ -162,6 +164,10 @@ function install {
         ;;
       --user)
         user="$2"
+        shift
+        ;;
+      --download-url)
+        download_url="$2"
         shift
         ;;
       --help)
@@ -187,7 +193,7 @@ function install {
   install_dependencies
   create_consul_user "$user"
   create_consul_install_paths "$path" "$user"
-  install_binaries "$version" "$path" "$user"
+  install_binaries "$version" "$path" "$user" "$download_url"
 
   log_info "Consul install complete!"
 }
