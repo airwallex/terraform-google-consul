@@ -194,9 +194,12 @@ EOF
   $retry_join_key_val
   "server": $server,
   $autopilot_configuration
-  "ui": true,
+  "ui": false,
   $encrypt_key_val
-  "raft_protocol": $raft_protocol
+  "raft_protocol": $raft_protocol,
+  "performance": {
+    "raft_multiplier": 1
+  }
 }
 EOF
   chown "$user:$user" "$config_path"
