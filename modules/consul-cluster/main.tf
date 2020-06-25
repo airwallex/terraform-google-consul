@@ -19,7 +19,7 @@ resource "google_compute_region_instance_group_manager" "consul_server" {
 
   base_instance_name = var.cluster_name
 
-  version = {
+  version {
     instance_template  = data.template_file.compute_instance_template_self_link.rendered
   }
 
